@@ -29,7 +29,7 @@ export function SignIn() {
     formState: { isSubmitting, errors },
   } = useForm<SignInForm>({
     resolver: zodResolver(signInForm),
-  })
+  });
 
   const { mutateAsync: authenticate } = useMutation({
     mutationFn: signIn,
