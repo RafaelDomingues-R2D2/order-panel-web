@@ -26,8 +26,6 @@ export function AccountMenu() {
     staleTime: Infinity,
   })
 
-  console.log('profile', profile)
-
   return (
     <Dialog>
       <DropdownMenu>
@@ -63,7 +61,7 @@ export function AccountMenu() {
             <button
               className="w-full"
               onClick={() => {
-                Cookies.remove('pato-rico')
+                Cookies.remove('order-panel')
                 navigate('/sign-in', { replace: true })
               }}
             >

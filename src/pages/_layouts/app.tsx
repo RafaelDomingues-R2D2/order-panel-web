@@ -17,7 +17,7 @@ export function AppLayout() {
           const status = error.response?.status
 
           if (status === 401) {
-            Cookies.remove('pato-rico')
+            Cookies.remove('order-panel')
             navigate('/sign-in', { replace: true })
           }
         }

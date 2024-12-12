@@ -10,7 +10,7 @@ export const api = axios.create({
 api.interceptors.request.use((request) => {
   const headers = request.headers ?? {}
 
-  const token = Cookies.get('pato-rico')
+  const token = Cookies.get('order-panel')
 
   if (token) {
     headers.Authorization = `Bearer ${token}`

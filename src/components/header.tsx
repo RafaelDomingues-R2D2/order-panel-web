@@ -18,9 +18,9 @@ export function Header() {
             <Home className="h-4 w-4" />
             Início
           </NavLink>
-          <NavLink to="/transactions">
+          <NavLink to="/orders">
             <Receipt className="h-4 w-4" />
-            Transações
+            Pedidos
           </NavLink>
         </nav>
         <div className="ml-auto flex items-center gap-2">

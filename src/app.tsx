@@ -13,7 +13,7 @@ export function App() {
   return (
     <HelmetProvider>
       <ThemeProvider storageKey="patoRico-theme" defaultTheme="system">
-        <Helmet titleTemplate="%s | Pato Rico" />
+        <Helmet titleTemplate="%s | Painel de Pedido" />
 
         <Toaster richColors />
 

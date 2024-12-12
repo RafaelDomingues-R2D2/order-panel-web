@@ -43,7 +43,7 @@ export function SignIn() {
         password: data.password,
       })
 
-      Cookies.set('pato-rico', result.data.token, { expires: 7, path: '/' })
+      Cookies.set('order-panel', result.data.token, { expires: 7, path: '/' })
       navigate('/', { replace: true })
     } catch {
       toast.error('Credenciais inválidas.')
