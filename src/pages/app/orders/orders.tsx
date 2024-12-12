@@ -1,7 +1,8 @@
 import { getOrders, Task } from "@/api/get-orders";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
 import { useQuery } from "@tanstack/react-query";
+import { add, format } from "date-fns";
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async'
 
@@ -69,9 +70,7 @@ export function Orders() {
                 {...provided.droppableProps}
                 className={`w-screen p-4 rounded-lg shadow-md min-h-[200px] transition-colors duration-300`}
               >
-                {/* <h2 className="text-xl font-semibold mb-4">{columnId}</h2> */}
                 <h2 className="text-xl font-semibold mb-4">{columsLabel[columnId as keyof Columns]}</h2>
-                {/* <h2 className="text-xl font-semibold mb-4">{columnId.replace("-", " ").toUpperCase()}</h2> */}
                 {tasks[columnId as keyof Columns].map((task, index) => (
                   <Draggable draggableId={task.id} index={index} key={task.id}>
                     {(provided, snapshot) => (
@@ -83,7 +82,18 @@ export function Orders() {
                           snapshot.isDragging ? "scale-105" : "scale-100"
                         }`}
                       >
-                        {task?.totalAmount}
+                        <CardTitle className="text-center ">
+                          <p>{task?.customerName}</p>
+                        </CardTitle>
+                        <CardContent className="flex-col justify-between items-center text-center">
+                          <p className="mb-4 text-sm">{task?.customerPhone}</p>
+                          <p>{format(add(task?.deliveryDate, { hours: 3 }), 'dd/MM/yyyy')}</p>
+                          <p>{task?.totalItems}</p>
+                          <p>{(task.totalAmount! / 100).toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+        })}</p>
+                        </CardContent>
                       </Card>
                     )}
                   </Draggable>

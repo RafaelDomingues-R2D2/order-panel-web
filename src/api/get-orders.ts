@@ -2,14 +2,11 @@ import { api } from '@/lib/axios'
 
 export interface Task {
   id: string;
-  createdAt: Date | null;
-  organizationId: string;
-  customerId: string;
-  shippingAddressId: string;
+  deliveryDate: string;
+  customerName: string;
+  customerPhone: string;
   totalAmount: number | null;
   totalItems: number | null;
-  orderStageId: string,
-  priority:  'URGENT' | 'HIGH' | 'NORMAL' | 'LOW';
 }
 
 export interface getOrdersResponse {
