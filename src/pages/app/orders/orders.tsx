@@ -1,7 +1,8 @@
 import { getOrders, Task } from "@/api/get-orders";
+import { changeOrderStage } from "@/api/change-order-stage";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { add, format } from "date-fns";
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async'
@@ -24,10 +25,18 @@ export function Orders() {
     queryFn: getOrders,
   })
 
+  
+  const { mutateAsync: changeOrderStageFn } = useMutation({
+    mutationFn: changeOrderStage,
+    onSuccess: async () => {
+      // queryClient.invalidateQueries({ queryKey: ['transactions'] })
+    },
+  })
+
   const [tasks, setTasks] = useState<Columns>(orders as Columns ?? {TODO: [], DOING: [], DONE: []});
 
   const onDragEnd = (result: DropResult): void => {
-    const { source, destination } = result;
+    const { draggableId, source, destination } = result;
 
     if (!destination) return;
 
@@ -48,7 +57,10 @@ export function Orders() {
       [source.droppableId as keyof Columns]: startColumn,
       [destination.droppableId as keyof Columns]: endColumn,
     });
+
+    changeOrderStageFn({id: draggableId, stage: destination.droppableId})
   };
+
 
   useEffect(() => {
     if(orders){
