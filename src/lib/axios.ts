@@ -4,18 +4,18 @@ import Cookies from 'js-cookie'
 import { env } from '@/env'
 
 export const api = axios.create({
-  baseURL: env.VITE_API_URL,
+	baseURL: env.VITE_API_URL,
 })
 
 api.interceptors.request.use((request) => {
-  const headers = request.headers ?? {}
+	const headers = request.headers ?? {}
 
-  const token = Cookies.get('order-panel')
+	const token = Cookies.get('order-panel')
 
-  if (token) {
-    headers.Authorization = `Bearer ${token}`
-  }
+	if (token) {
+		headers.Authorization = `Bearer ${token}`
+	}
 
-  request.headers = headers
-  return request
+	request.headers = headers
+	return request
 })

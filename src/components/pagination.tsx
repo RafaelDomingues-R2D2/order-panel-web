@@ -1,79 +1,79 @@
 import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
+	ChevronLeft,
+	ChevronRight,
+	ChevronsLeft,
+	ChevronsRight,
 } from 'lucide-react'
 
 import { Button } from './ui/button'
 
 export interface PaginationProps {
-  pageIndex: number
-  totalCount: number
-  perPage: number
-  onPageChange: (pageIndex: number) => Promise<void> | void
+	pageIndex: number
+	totalCount: number
+	perPage: number
+	onPageChange: (pageIndex: number) => Promise<void> | void
 }
 
 export function Pagination({
-  pageIndex,
-  totalCount,
-  perPage,
-  onPageChange,
+	pageIndex,
+	totalCount,
+	perPage,
+	onPageChange,
 }: PaginationProps) {
-  const pages = Math.ceil(totalCount / perPage) || 1
+	const pages = Math.ceil(totalCount / perPage) || 1
 
-  return (
-    <div className="flex items-center justify-between">
-      <span className="text-sm text-muted-foreground">
-        Total de {totalCount} item(s)
-      </span>
+	return (
+		<div className="flex items-center justify-between">
+			<span className="text-sm text-muted-foreground">
+				Total de {totalCount} item(s)
+			</span>
 
-      <div className="flex items-center gap-6 lg:gap-8">
-        <div className="text-sm font-medium">
-          Página {Number(pageIndex) + 1} de {pages}
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            className="h-8 w-8 p-0"
-            onClick={() => onPageChange(0)}
-            disabled={Number(pageIndex) === 0}
-          >
-            <span className="sr-only">Primeira página</span>
-            <ChevronsLeft className="h-4 w-4" />
-          </Button>
+			<div className="flex items-center gap-6 lg:gap-8">
+				<div className="text-sm font-medium">
+					Página {Number(pageIndex) + 1} de {pages}
+				</div>
+				<div className="flex items-center gap-2">
+					<Button
+						variant="outline"
+						className="h-8 w-8 p-0"
+						onClick={() => onPageChange(0)}
+						disabled={Number(pageIndex) === 0}
+					>
+						<span className="sr-only">Primeira página</span>
+						<ChevronsLeft className="h-4 w-4" />
+					</Button>
 
-          <Button
-            variant="outline"
-            className="h-8 w-8 p-0"
-            onClick={() => onPageChange(Number(pageIndex) - 1)}
-            disabled={Number(pageIndex) === 0}
-          >
-            <span className="sr-only">Página anterior</span>
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
+					<Button
+						variant="outline"
+						className="h-8 w-8 p-0"
+						onClick={() => onPageChange(Number(pageIndex) - 1)}
+						disabled={Number(pageIndex) === 0}
+					>
+						<span className="sr-only">Página anterior</span>
+						<ChevronLeft className="h-4 w-4" />
+					</Button>
 
-          <Button
-            variant="outline"
-            className="h-8 w-8 p-0"
-            onClick={() => onPageChange(Number(pageIndex) + 1)}
-            disabled={pages <= Number(pageIndex) + 1}
-          >
-            <span className="sr-only">Próxima página</span>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+					<Button
+						variant="outline"
+						className="h-8 w-8 p-0"
+						onClick={() => onPageChange(Number(pageIndex) + 1)}
+						disabled={pages <= Number(pageIndex) + 1}
+					>
+						<span className="sr-only">Próxima página</span>
+						<ChevronRight className="h-4 w-4" />
+					</Button>
 
-          <Button
-            variant="outline"
-            className="h-8 w-8 p-0"
-            onClick={() => onPageChange(Number(pages) - 1)}
-            disabled={pages <= Number(pageIndex) + 1}
-          >
-            <span className="sr-only">Última página</span>
-            <ChevronsRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    </div>
-  )
+					<Button
+						variant="outline"
+						className="h-8 w-8 p-0"
+						onClick={() => onPageChange(Number(pages) - 1)}
+						disabled={pages <= Number(pageIndex) + 1}
+					>
+						<span className="sr-only">Última página</span>
+						<ChevronsRight className="h-4 w-4" />
+					</Button>
+				</div>
+			</div>
+		</div>
+	)
 }

@@ -10,17 +10,17 @@ import { queryClient } from './lib/react-query'
 import { router } from './routes'
 
 export function App() {
-  return (
-    <HelmetProvider>
-      <ThemeProvider storageKey="patoRico-theme" defaultTheme="system">
-        <Helmet titleTemplate="%s | Painel de Pedido" />
+	return (
+		<HelmetProvider>
+			<ThemeProvider storageKey="patoRico-theme" defaultTheme="system">
+				<Helmet titleTemplate="%s | Painel de Pedido" />
 
-        <Toaster richColors />
+				<Toaster richColors />
 
-        <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
-        </QueryClientProvider>
-      </ThemeProvider>
-    </HelmetProvider>
-  )
+				<QueryClientProvider client={queryClient}>
+					<RouterProvider router={router} />
+				</QueryClientProvider>
+			</ThemeProvider>
+		</HelmetProvider>
+	)
 }
