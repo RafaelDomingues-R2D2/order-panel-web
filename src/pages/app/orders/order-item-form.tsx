@@ -4,6 +4,14 @@ import { UpdateOrderItem } from "@/api/order-items/update-order-item";
 import { getProducts } from "@/api/products/get-products";
 import { Button } from "@/components/ui/button";
 import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+} from "@/components/ui/command";
+import {
 	DialogContent,
 	DialogFooter,
 	DialogTitle,
@@ -11,17 +19,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 
 import { queryClient } from "@/lib/react-query";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -34,8 +41,8 @@ export interface OrderItemFormProps {
 
 const orderItemSchema = z.object({
 	orderId: z.string(),
-	productId: z.string(),
-	quantity: z.string(),
+	productId: z.string().min(1, { message: "Este campo é obrigatório" }),
+	quantity: z.string().min(1, { message: "Este campo é obrigatório" }),
 });
 
 type OrderItemSchema = z.infer<typeof orderItemSchema>;
@@ -62,6 +69,7 @@ export function OrderItemForm({
 		control,
 		formState: { isSubmitting, errors },
 		reset,
+		setValue,
 	} = useForm<OrderItemSchema>({
 		resolver: zodResolver(orderItemSchema),
 		values: {
@@ -124,8 +132,6 @@ export function OrderItemForm({
 		}
 	}
 
-	
-
 	return (
 		<DialogContent className="min-w-96">
 			{/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
@@ -135,65 +141,96 @@ export function OrderItemForm({
 				onSubmit={handleSubmit(handleCreateOrderItem)}
 				className="flex flex-col gap-1"
 			>
-				<div className="flex items-center">
-					<div className="mb-6 flex flex-col w-full">
-						<Label className="mb-2">Produtos</Label>
-						<Controller
-							name="productId"
-							control={control}
-							render={({ field: { name, onChange, value, disabled } }) => {
-								return (
-									<>
-										<Select
-											name={name}
-											onValueChange={onChange}
-											value={value}
-											disabled={disabled}
-										>
-											<SelectTrigger>
-												<SelectValue placeholder="Produto" />
-											</SelectTrigger>
-											<SelectContent>
-												{/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
-												{products &&
-													products?.products?.map((product) => {
-														return (
-															<SelectItem key={product.id} value={product.id}>
-																<span>{`Nam: ${product.name} - Est: ${product.stock} - Pre: ${(
-																	Number(product.price) / 100
-																).toLocaleString("pt-BR", {
-																	style: "currency",
-																	currency: "BRL",
-																})}`}</span>
-															</SelectItem>
-														);
-													})}
-											</SelectContent>
-										</Select>
-										{errors.productId && (
-											<span className="text-xs font-medium text-red-500 dark:text-red-400 absolute mt-16">
-												{errors.productId.message}
-											</span>
-										)}
-									</>
-								);
-							}}
-						/>
-					</div>
-					<div className="mb-6 flex flex-col ml-2">
-						<Label className="mb-2">Quantidade</Label>
-						<Input
-							id="quantity"
-							type="number"
-							autoCorrect="off"
-							{...register("quantity")}
-						/>
-						{errors.quantity && (
-							<span className="text-xs font-medium text-red-500 dark:text-red-400 absolute mt-16">
-								{errors.quantity.message}
-							</span>
+				<div className="mb-6 flex flex-col ml-2">
+					<Label className="mb-2">Produtos</Label>
+					<Controller
+						name="productId"
+						control={control}
+						render={({ field: { value } }) => (
+							<Popover>
+								<PopoverTrigger asChild>
+									<Button
+										variant="outline"
+										// biome-ignore lint/a11y/useSemanticElements: <explanation>
+										role="combobox"
+										className="w-auto justify-between"
+									>
+										{value
+											? `${
+													products?.products.find(
+														(customer) => customer.id === value,
+													)?.name
+												} - Est: ${
+													products?.products.find(
+														(customer) => customer.id === value,
+													)?.stock
+												} - Pre: ${
+													products?.products.find(
+														(customer) => customer.id === value,
+													)?.price
+												}`
+											: "Produtos"}
+										<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+									</Button>
+								</PopoverTrigger>
+								<PopoverContent className="w-80 p-0">
+									<Command>
+										<CommandInput placeholder="Procurar..." />
+										<CommandList>
+											<CommandEmpty>Nada por aqui...</CommandEmpty>
+											<CommandGroup>
+												{products?.products.map((product) => (
+													<CommandItem
+														key={product.id}
+														value={product.name}
+														onSelect={(currentValue) => {
+															setValue(
+																"productId",
+																products.products.find(
+																	(f) =>
+																		f.name.toLowerCase() ===
+																		currentValue.toLowerCase().split(" - ")[0],
+																)?.id || "",
+															);
+														}}
+													>
+														{`${product.name} - Est: ${product.stock} - Pre:${product.price} `}
+														<Check
+															className={cn(
+																"mr-2 h-4 w-4",
+																value === product.id
+																	? "opacity-100"
+																	: "opacity-0",
+															)}
+														/>
+													</CommandItem>
+												))}
+											</CommandGroup>
+										</CommandList>
+									</Command>
+								</PopoverContent>
+							</Popover>
 						)}
-					</div>
+					/>
+					{errors.productId && (
+						<span className="text-xs font-medium text-red-500 dark:text-red-400 absolute mt-16">
+							{errors.productId.message}
+						</span>
+					)}
+				</div>
+				<div className="mb-6 flex flex-col ml-2">
+					<Label className="mb-2">Quantidade</Label>
+					<Input
+						id="quantity"
+						type="number"
+						autoCorrect="off"
+						{...register("quantity")}
+					/>
+					{errors.quantity && (
+						<span className="text-xs font-medium text-red-500 dark:text-red-400 absolute mt-16">
+							{errors.quantity.message}
+						</span>
+					)}
 				</div>
 
 				<DialogFooter>

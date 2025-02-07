@@ -1,9 +1,17 @@
-import { getCustomers } from "@/api/cutomers/get-customers";
+import { getCustomers } from "@/api/customers/get-customers";
 import { getOrderItems } from "@/api/order-items/get-order-items";
 import { CreateOrder } from "@/api/orders/create-order";
 import { getOrder } from "@/api/orders/get-order";
 import { UpdateOrder } from "@/api/orders/update-order";
 import { Button } from "@/components/ui/button";
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+} from "@/components/ui/command";
 import { DatePicker } from "@/components/ui/date-picker";
 import {
 	Dialog,
@@ -13,12 +21,11 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
+
 import {
 	Table,
 	TableBody,
@@ -27,10 +34,11 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { queryClient } from "@/lib/react-query";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
-import { Loader2 } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -44,8 +52,8 @@ export interface OrderFormProps {
 }
 
 const orderSchema = z.object({
-	customerId: z.string(),
-	deliveryDate: z.string(),
+	customerId: z.string().min(1, { message: "Este campo é obrigatório" }),
+	deliveryDate: z.string().min(1, { message: "Este campo é obrigatório" }),
 });
 
 type OrderSchema = z.infer<typeof orderSchema>;
@@ -78,7 +86,7 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 		setValue,
 	} = useForm<OrderSchema>({
 		resolver: zodResolver(orderSchema),
-		defaultValues: {
+		values: {
 			customerId: orderId !== "new" ? String(order?.order?.customerId) : "",
 			deliveryDate:
 				orderId !== "new"
@@ -100,6 +108,7 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 
 	async function handleCreateOrder({ customerId, deliveryDate }: OrderSchema) {
 		if (id !== "new") {
+			console.log("customerId ", customerId);
 			try {
 				await updateOrder({
 					id,
@@ -142,8 +151,7 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 
 	return (
 		<DialogContent className="min-w-96">
-			{/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
-			<DialogTitle></DialogTitle>
+			<DialogTitle> </DialogTitle>
 			<form
 				onSubmit={handleSubmit(handleCreateOrder)}
 				className="flex flex-col gap-1"
@@ -154,39 +162,67 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 						<Controller
 							name="customerId"
 							control={control}
-							render={({ field: { name, onChange, value, disabled } }) => {
-								return (
-									<>
-										<Select
-											name={name}
-											onValueChange={onChange}
-											value={value}
-											disabled={disabled}
+							render={({ field: { value } }) => (
+								<Popover>
+									<PopoverTrigger asChild>
+										<Button
+											variant="outline"
+											// biome-ignore lint/a11y/useSemanticElements: <explanation>
+											role="combobox"
+											className="w-auto justify-between"
 										>
-											<SelectTrigger>
-												<SelectValue placeholder="Cliente" />
-											</SelectTrigger>
-											<SelectContent>
-												{/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
-												{customers &&
-													customers?.customers?.map((customer) => {
-														return (
-															<SelectItem key={customer?.id} value={customer?.id}>
-																<span>{customer?.name}</span>
-															</SelectItem>
-														);
-													})}
-											</SelectContent>
-										</Select>
-										{errors?.customerId && (
-											<span className="text-xs font-medium text-red-500 dark:text-red-400 absolute mt-16">
-												{errors?.customerId?.message}
-											</span>
-										)}
-									</>
-								);
-							}}
+											{value
+												? customers?.customers.find(
+														(customer) => customer.id === value,
+													)?.name
+												: "Clientes"}
+											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+										</Button>
+									</PopoverTrigger>
+									<PopoverContent className="w-[200px] p-0">
+										<Command>
+											<CommandInput placeholder="Procurar..." />
+											<CommandList>
+												<CommandEmpty>Nada por aqui...</CommandEmpty>
+												<CommandGroup>
+													{customers?.customers.map((customer) => (
+														<CommandItem
+															key={customer.id}
+															value={customer.name}
+															onSelect={(currentValue) => {
+																setValue(
+																	"customerId",
+																	customers.customers.find(
+																		(f) =>
+																			f.name.toLowerCase() ===
+																			currentValue.toLowerCase(),
+																	)?.id || "",
+																);
+															}}
+														>
+															<Check
+																className={cn(
+																	"mr-2 h-4 w-4",
+																	value === customer.id
+																		? "opacity-100"
+																		: "opacity-0",
+																)}
+															/>
+															{customer.name}
+														</CommandItem>
+													))}
+												</CommandGroup>
+											</CommandList>
+										</Command>
+									</PopoverContent>
+								</Popover>
+							)}
 						/>
+						{errors.customerId && (
+							<span className="text-xs font-medium text-red-500 dark:text-red-400 absolute mt-16">
+								{errors.customerId.message}
+							</span>
+						)}
 					</div>
 					{orderId !== "new" ? (
 						isFetched && (
@@ -218,12 +254,11 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 					</Button>
 				</DialogFooter>
 			</form>
-
-			{orderItems && id !== "new" && (
+			{id !== "new" && (
 				<>
-					<div className="space-y-2.5 mb-1">
-						<h2>Itens</h2>
-
+					<span className="text-1xl font-bold tracking-tight">Itens</span>
+					<div className="flex items-center justify-between">
+						<span> </span>
 						<Button
 							size="xs"
 							className="mr-0.5 border-none"

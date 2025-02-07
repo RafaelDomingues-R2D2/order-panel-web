@@ -1,14 +1,14 @@
 import { Search, Trash2 } from "lucide-react";
 
+import { DeleteOrderItem } from "@/api/order-items/delete-order-item";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { useState } from "react";
-import { OrderItemForm } from "./order-item-form";
-import { DeleteOrderItem } from "@/api/order-items/delete-order-item";
-import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 import { toast } from "sonner";
+import { OrderItemForm } from "./order-item-form";
 
 export interface OrderItemsTableRowProps {
 	orderItem: {
@@ -21,26 +21,24 @@ export interface OrderItemsTableRowProps {
 	};
 }
 
-
-
-
 export function OrderItemsTablerRow({ orderItem }: OrderItemsTableRowProps) {
 	const [isItemFormOpen, setIsItemFormOpen] = useState(false);
 
-	
-const { mutateAsync: deleteOrderItem } = useMutation({
-	mutationFn: DeleteOrderItem,
-});
+	const { mutateAsync: deleteOrderItem } = useMutation({
+		mutationFn: DeleteOrderItem,
+	});
 
 	async function handleDeleteOrderItem(id: string) {
 		try {
 			await deleteOrderItem({ id });
-	
+
 			toast.success("Item Deletado!");
-			queryClient.invalidateQueries({ queryKey: ["orderItems", orderItem.orderId] });
+			queryClient.invalidateQueries({
+				queryKey: ["orderItems", orderItem.orderId],
+			});
 			queryClient.invalidateQueries({ queryKey: ["orders"] });
 		} catch (err) {
-			toast.error("Erro ao deletar o pedido");
+			toast.error("Erro ao deletar o item");
 		}
 	}
 
@@ -56,22 +54,22 @@ const { mutateAsync: deleteOrderItem } = useMutation({
 					})}
 				</TableCell>
 				<TableCell className="flex items-center">
-						<Button
-							size="xs"
-							className="mr-0.5 border-none"
-							onClick={() => {
-								setIsItemFormOpen(true);
-							}}
-						>
-							<Search className="h-4 w-4" />
-						</Button>
-						<Button
-							size="xs"
-							className="mr-0.5 border-none"
-							onClick={() => handleDeleteOrderItem(orderItem.id)}
-						>
-							<Trash2 className="h-4 w-4" />
-						</Button>
+					<Button
+						size="xs"
+						className="mr-0.5 border-none"
+						onClick={() => {
+							setIsItemFormOpen(true);
+						}}
+					>
+						<Search className="h-4 w-4" />
+					</Button>
+					<Button
+						size="xs"
+						className="mr-0.5 border-none"
+						onClick={() => handleDeleteOrderItem(orderItem.id)}
+					>
+						<Trash2 className="h-4 w-4" />
+					</Button>
 				</TableCell>
 			</TableRow>
 			<Dialog open={isItemFormOpen} onOpenChange={setIsItemFormOpen}>

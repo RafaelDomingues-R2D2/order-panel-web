@@ -1,8 +1,10 @@
 import { changeOrderStage } from "@/api/orders/change-order-stage";
+import { DeleteOrder } from "@/api/orders/delete-order";
 import { type Task, getOrders } from "@/api/orders/get-orders";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
+import { queryClient } from "@/lib/react-query";
 import {
 	DragDropContext,
 	Draggable,
@@ -14,10 +16,8 @@ import { add, format } from "date-fns";
 import { Search, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { OrderForm } from "./order-form";
-import { DeleteOrder } from "@/api/orders/delete-order";
 import { toast } from "sonner";
-import { queryClient } from "@/lib/react-query";
+import { OrderForm } from "./order-form";
 
 interface Columns {
 	TODO: Task[];
@@ -101,8 +101,7 @@ export function Orders() {
 			<div className="flex flex-col gap-4">
 				<h1 className="text-3xl font-bold tracking-tight">Pedidos</h1>
 				<div className="flex items-center justify-between">
-					{/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
-					<span></span>
+					<span> </span>
 					<Button
 						size="xs"
 						className="mr-0.5 border-none"
@@ -179,10 +178,11 @@ export function Orders() {
 																>
 																	<Search className="h-4 w-4" />
 																</Button>
-																<Button 
+																<Button
 																	size="xs"
 																	className="mr-0.5 border-none"
-																	onClick={() => handleDeleteOrder(task.id)}>
+																	onClick={() => handleDeleteOrder(task.id)}
+																>
 																	<Trash2 className="h-4 w-4" />
 																</Button>
 															</div>

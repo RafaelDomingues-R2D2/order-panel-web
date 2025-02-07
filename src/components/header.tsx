@@ -1,9 +1,16 @@
-import { CircleDollarSign, Home, Receipt } from 'lucide-react'
+import {
+	CircleDollarSign,
+	ClipboardList,
+	Home,
+	List,
+	Package,
+	Users,
+} from "lucide-react";
 
-import { AccountMenu } from './account-menu'
-import { NavLink } from './nav-link'
-import { ModeToggle } from './theme/theme-toggle'
-import { Separator } from './ui/separator'
+import { AccountMenu } from "./account-menu";
+import { NavLink } from "./nav-link";
+import { ModeToggle } from "./theme/theme-toggle";
+import { Separator } from "./ui/separator";
 
 export function Header() {
 	return (
@@ -18,8 +25,20 @@ export function Header() {
 						<Home className="h-4 w-4" />
 						Início
 					</NavLink>
+					<NavLink to="/customers">
+						<Users className="h-4 w-4" />
+						Clientes
+					</NavLink>
+					<NavLink to="/categories">
+						<List className="h-4 w-4" />
+						Categorias
+					</NavLink>
+					<NavLink to="/products">
+						<Package className="h-4 w-4" />
+						Produtos
+					</NavLink>
 					<NavLink to="/orders">
-						<Receipt className="h-4 w-4" />
+						<ClipboardList className="h-4 w-4" />
 						Pedidos
 					</NavLink>
 				</nav>
@@ -29,5 +48,5 @@ export function Header() {
 				</div>
 			</div>
 		</div>
-	)
+	);
 }

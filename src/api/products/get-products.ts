@@ -3,13 +3,12 @@ import { api } from "@/lib/axios";
 interface getProductsResponse {
 	products: {
 		id: string;
-		name: string | null;
-		createdAt: Date | null;
+		name: string;
 		description: string | null;
-		organizationId: string;
-		categoryId: string;
-		price: number | null;
 		stock: number | null;
+		price: number | null;
+		categoryId: string;
+		categoryName: string | null;
 	}[];
 }
 
