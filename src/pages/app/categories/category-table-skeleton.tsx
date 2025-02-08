@@ -1,4 +1,4 @@
-import { PencilLine, Search } from "lucide-react";
+import { PencilLine } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
