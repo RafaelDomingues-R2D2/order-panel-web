@@ -1,4 +1,4 @@
-import { Search, Trash2 } from "lucide-react";
+import { PencilLine, Trash2 } from "lucide-react";
 
 import { DeleteOrderItem } from "@/api/order-items/delete-order-item";
 import { Button } from "@/components/ui/button";
@@ -61,7 +61,7 @@ export function OrderItemsTablerRow({ orderItem }: OrderItemsTableRowProps) {
 							setIsItemFormOpen(true);
 						}}
 					>
-						<Search className="h-4 w-4" />
+						<PencilLine className="h-4 w-4" />
 					</Button>
 					<Button
 						size="xs"

@@ -37,7 +37,7 @@ export function Header() {
 							<NavigationMenuItem>
 								<NavigationMenuTrigger>Cadastros</NavigationMenuTrigger>
 								<NavigationMenuContent>
-									<ul className="grid w-[400px] gap-3 p-4 md:w-[160px] lg:w-[600px] ">
+									<ul className="grid w-[400px] gap-3 p-4 md:w-[160px] lg:w-[160px] ">
 										<NavLink to="/customers">
 											<Users className="h-4 w-4" />
 											Clientes

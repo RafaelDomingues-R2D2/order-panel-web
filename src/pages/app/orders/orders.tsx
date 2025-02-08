@@ -13,7 +13,7 @@ import {
 } from "@hello-pangea/dnd";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { add, format } from "date-fns";
-import { Search, Trash2 } from "lucide-react";
+import { PencilLine, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { toast } from "sonner";
@@ -177,7 +177,7 @@ export function Orders() {
 																		setOrderId(task.id);
 																	}}
 																>
-																	<Search className="h-4 w-4" />
+																	<PencilLine className="h-4 w-4" />
 																</Button>
 																<Button
 																	size="xs"

@@ -4,7 +4,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { queryClient } from "@/lib/react-query";
 import { useMutation } from "@tanstack/react-query";
-import { Search, Trash2 } from "lucide-react";
+import { PencilLine, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ProductForm } from "./product-form";
@@ -54,7 +54,7 @@ export function ProductsTablerRow({ products }: ProductsTableRowProps) {
 							setIsProductFormOpen(true);
 						}}
 					>
-						<Search className="h-4 w-4" />
+						<PencilLine className="h-4 w-4" />
 					</Button>
 					<Button
 						size="xs"

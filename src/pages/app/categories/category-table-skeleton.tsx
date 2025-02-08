@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { PencilLine, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,7 +11,7 @@ export function CategoryTableSkeleton() {
 			<TableRow key={i}>
 				<TableCell>
 					<Button disabled variant="outline" size="xs">
-						<Search className="h-3 w-3" />
+						<PencilLine className="h-3 w-3" />
 						<span className="sr-only">Detalhes do pedido</span>
 					</Button>
 				</TableCell>
