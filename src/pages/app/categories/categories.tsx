@@ -1,5 +1,6 @@
 import { getCategories } from "@/api/categories/get-categories";
 import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/dialog";
 import {
 	Table,
 	TableBody,
@@ -7,22 +8,20 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import {  useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { CategoriesTablerRow } from "./categories-table-row";
-import { useState } from "react";
-import { Dialog } from "@/components/ui/dialog";
 import { CategoryForm } from "./category-form";
+import { CategoryTableSkeleton } from "./category-table-skeleton";
 
 export function Categories() {
-		const [isCategoryFormOpen, setIsCategoryFormOpen] = useState(false);
-	
-	const { data: categories } = useQuery({
+	const [isCategoryFormOpen, setIsCategoryFormOpen] = useState(false);
+
+	const { data: categories, isLoading: isLoadingCategories } = useQuery({
 		queryKey: ["categories"],
 		queryFn: () => getCategories(),
 	});
-
-	
 
 	return (
 		<>
@@ -51,7 +50,6 @@ export function Categories() {
 							</TableRow>
 						</TableHeader>
 						<TableBody>
-							{/* {isLoadingTransactions && <TransactionTableSkeleton />} */}
 							{/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
 							{categories &&
 								categories.categories.map((category) => {
@@ -65,10 +63,10 @@ export function Categories() {
 						</TableBody>
 					</Table>
 				</div>
+				{isLoadingCategories && <CategoryTableSkeleton />}
+
 				<Dialog open={isCategoryFormOpen} onOpenChange={setIsCategoryFormOpen}>
-					<CategoryForm
-						setIsCategoryFormOpen={setIsCategoryFormOpen}
-					/>
+					<CategoryForm setIsCategoryFormOpen={setIsCategoryFormOpen} />
 				</Dialog>
 			</div>
 		</>

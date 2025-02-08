@@ -3,19 +3,17 @@ import { api } from "@/lib/axios";
 export interface UpdateCategoryRequest {
 	id: string;
 	name: string;
-	email: string;
-	phone: string;
+	description: string | null;
 }
 
 export async function UpdateCategory({
 	id,
 	name,
-	email,
-	phone,
+	description,
 }: UpdateCategoryRequest) {
 	await api.put(`/categories/${id}`, {
+		id,
 		name,
-		email,
-		phone,
+		description,
 	});
 }

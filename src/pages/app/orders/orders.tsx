@@ -17,6 +17,7 @@ import { Search, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { toast } from "sonner";
+import { OrdersTableSkeleton } from "./card-skeleton";
 import { OrderForm } from "./order-form";
 
 interface Columns {
@@ -35,7 +36,7 @@ export function Orders() {
 	const [isFormOpen, setIsFormOpen] = useState(false);
 	const [orderId, setOrderId] = useState("new");
 
-	const { data: orders } = useQuery({
+	const { data: orders, isLoading: isLoadingOrders } = useQuery({
 		queryKey: ["orders"],
 		queryFn: getOrders,
 	});
@@ -199,6 +200,8 @@ export function Orders() {
 					</div>
 				</DragDropContext>
 			</div>
+			{isLoadingOrders && <OrdersTableSkeleton />}
+
 			<Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
 				<OrderForm setIsFormOpen={setIsFormOpen} orderId={orderId} />
 			</Dialog>

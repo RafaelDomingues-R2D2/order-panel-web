@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TableCell, TableRow } from "@/components/ui/table";
 
-export function OrdersTableSkeleton() {
+export function CustomerTableSkeleton() {
 	return Array.from({ length: 10 }).map((_, i) => {
 		return (
 			// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>

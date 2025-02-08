@@ -12,12 +12,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { CustomerForm } from "./customer-form";
+import { CustomerTableSkeleton } from "./customer-table-skeleton";
 import { CustomersTablerRow } from "./customers-table-row";
 
 export function Customers() {
 	const [isCustomerFormOpen, setIsCustomerFormOpen] = useState(false);
 
-	const { data: customers } = useQuery({
+	const { data: customers, isLoading: isLoadingCustomers } = useQuery({
 		queryKey: ["customers"],
 		queryFn: () => getCustomers(),
 	});
@@ -63,6 +64,8 @@ export function Customers() {
 						</TableBody>
 					</Table>
 				</div>
+				{isLoadingCustomers && <CustomerTableSkeleton />}
+
 				<Dialog open={isCustomerFormOpen} onOpenChange={setIsCustomerFormOpen}>
 					<CustomerForm setIsCustomerFormOpen={setIsCustomerFormOpen} />
 				</Dialog>
