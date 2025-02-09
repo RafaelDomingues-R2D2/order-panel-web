@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import {
+	Dialog,
 	DialogContent,
 	DialogFooter,
 	DialogTitle,
@@ -8,14 +9,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { CreateCustomer } from "@/api/customers/create-customer";
+import { getCustomerAddressesByCustomer } from "@/api/customers/customer-addresses/get-customers-addresses-by-customer";
 import { UpdateCustomer } from "@/api/customers/update-customer";
+import {
+	Table,
+	TableBody,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import { queryClient } from "@/lib/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
+import { CustomerAddressForm } from "./customer-addresses/customer-address-form";
+import { CustomerAddressTablerRow } from "./customer-addresses/customer-address-table-row";
 
 export interface CustomerFormProps {
 	setIsCustomerFormOpen: (isOpen: boolean) => void;
@@ -40,6 +53,18 @@ export function CustomerForm({
 	setIsCustomerFormOpen,
 	customer,
 }: CustomerFormProps) {
+	const [isCustomerAddressFormOpen, setIsCustomerAddressFormOpen] =
+		useState(false);
+	const [id, setId] = useState(customer?.id);
+	const [, setSearchParams] = useSearchParams();
+
+	const { data: customerAddresses } = useQuery({
+		queryKey: ["customerAddresses", customer?.id],
+		queryFn: () => getCustomerAddressesByCustomer({ customerId: String(id) }),
+		// biome-ignore lint/complexity/noUselessTernary: <explanation>
+		enabled: id ? true : false,
+	});
+
 	const {
 		register,
 		handleSubmit,
@@ -97,15 +122,19 @@ export function CustomerForm({
 		}
 	}
 
+	useEffect(() => {
+		setId(customer?.id);
+	}, [customer?.id]);
+
 	return (
-		<DialogContent className="min-w-96">
+		<DialogContent className="min-w-96 w-[80000px]">
 			<DialogTitle> </DialogTitle>
 			<form
 				id="order-item-form"
 				onSubmit={handleSubmit(handleCreateCustomer)}
 				className="flex flex-col gap-1"
 			>
-				<div className="mb-6 flex flex-col ml-2">
+				<div className="mb-6 flex flex-col w-full">
 					<Label className="mb-2">Nome</Label>
 					<Input
 						id="name"
@@ -119,7 +148,7 @@ export function CustomerForm({
 						</span>
 					)}
 				</div>
-				<div className="mb-6 flex flex-col ml-2">
+				<div className="mb-6 flex flex-col w-full">
 					<Label className="mb-2">E-mail</Label>
 					<Input
 						id="email"
@@ -133,7 +162,7 @@ export function CustomerForm({
 						</span>
 					)}
 				</div>
-				<div className="mb-6 flex flex-col ml-2">
+				<div className="mb-6 flex flex-col w-full">
 					<Label className="mb-2">Telefone celular</Label>
 					<Input
 						id="phone"
@@ -160,6 +189,61 @@ export function CustomerForm({
 					</Button>
 				</DialogFooter>
 			</form>
+			{customer?.id && (
+				<>
+					<span className="text-1xl font-bold tracking-tight">Endereços</span>
+					<div className="flex items-center justify-between">
+						<span> </span>
+						<Button
+							size="xs"
+							className="mr-0.5 border-none"
+							onClick={() => {
+								setSearchParams((state) => {
+									state.set("customerId", String(customer?.id));
+
+									return state;
+								});
+
+								setIsCustomerAddressFormOpen(true);
+							}}
+						>
+							Adicionar Endereço
+						</Button>
+					</div>
+
+					<div className="rounded-md border">
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead className="w-[240px]">Rua</TableHead>
+									<TableHead className="w-[140px]">Número</TableHead>
+									<TableHead className="w-[240px]">Cidade</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{customerAddresses?.customerAddresses?.map(
+									(customerAddress) => {
+										return (
+											<CustomerAddressTablerRow
+												key={customerAddress?.id}
+												customerAddress={customerAddress}
+											/>
+										);
+									},
+								)}
+							</TableBody>
+						</Table>
+					</div>
+				</>
+			)}
+			<Dialog
+				open={isCustomerAddressFormOpen}
+				onOpenChange={setIsCustomerAddressFormOpen}
+			>
+				<CustomerAddressForm
+					setIsCustomerAddressFormOpen={setIsCustomerAddressFormOpen}
+				/>
+			</Dialog>
 		</DialogContent>
 	);
 }

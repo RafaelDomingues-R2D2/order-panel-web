@@ -154,6 +154,7 @@ export function OrderItemForm({
 										// biome-ignore lint/a11y/useSemanticElements: <explanation>
 										role="combobox"
 										className="w-auto justify-between"
+										disabled={orderItemId !== "new"}
 									>
 										{value
 											? `${
@@ -224,6 +225,7 @@ export function OrderItemForm({
 						id="quantity"
 						type="number"
 						autoCorrect="off"
+						disabled={orderItemId !== "new"}
 						{...register("quantity")}
 					/>
 					{errors.quantity && (

@@ -1,3 +1,4 @@
+import { getCustomerAddressesByCustomer } from "@/api/customers/customer-addresses/get-customers-addresses-by-customer";
 import { getCustomers } from "@/api/customers/get-customers";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
@@ -11,17 +12,19 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { CustomerForm } from "./customer-form";
-import { CustomerTableSkeleton } from "./customer-table-skeleton";
-import { CustomersTablerRow } from "./customers-table-row";
+import { CustomerAddressForm } from "./customer-address-form";
+import { CustomerAddressTablerRow } from "./customer-address-table-row";
+import { CustomerTableSkeleton } from "./customer-address-table-skeleton";
 
 export function Customers() {
-	const [isCustomerFormOpen, setIsCustomerFormOpen] = useState(false);
+	const [isCustomerAddressFormOpen, setIsCustomerAddressFormOpen] =
+		useState(false);
 
-	const { data: customers, isLoading: isLoadingCustomers } = useQuery({
-		queryKey: ["customers"],
-		queryFn: () => getCustomers(),
-	});
+	const { data: customers, isLoading: isLoadingCustomerAddressesByCustomer } =
+		useQuery({
+			queryKey: ["customersAddressesByCustomer"],
+			queryFn: () => getCustomerAddressesByCustomer(),
+		});
 
 	return (
 		<>
@@ -34,7 +37,7 @@ export function Customers() {
 						size="xs"
 						className="mr-0.5 border-none"
 						onClick={() => {
-							setIsCustomerFormOpen(true);
+							setIsCustomerAddressFormOpen(true);
 						}}
 					>
 						Novo
@@ -50,11 +53,15 @@ export function Customers() {
 							</TableRow>
 						</TableHeader>
 						<TableBody>
+							{/* {isLoadingTransactions && <TransactionTableSkeleton />} */}
 							{/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
 							{customers &&
-								customers.customers.map((customer) => {
+								customers.customers.map((customerAddress) => {
 									return (
-										<CustomersTablerRow key={customer.id} customer={customer} />
+										<CustomerAddressTablerRow
+											key={customerAddress.id}
+											customerAddress={customerAddress}
+										/>
 									);
 								})}
 						</TableBody>
@@ -62,8 +69,13 @@ export function Customers() {
 				</div>
 				{isLoadingCustomers && <CustomerTableSkeleton />}
 
-				<Dialog open={isCustomerFormOpen} onOpenChange={setIsCustomerFormOpen}>
-					<CustomerForm setIsCustomerFormOpen={setIsCustomerFormOpen} />
+				<Dialog
+					open={isCustomerAddressFormOpen}
+					onOpenChange={setIsCustomerAddressFormOpen}
+				>
+					<CustomerAddressForm
+						setIsCustomerAddressFormOpen={setIsCustomerAddressFormOpen}
+					/>
 				</Dialog>
 			</div>
 		</>

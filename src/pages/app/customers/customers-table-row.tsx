@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { CustomerForm } from "./customer-form";
 
 export interface CustomersTableRowProps {
-	customers: {
+	customer?: {
 		id: string;
 		organizationId: string;
 		name: string;
@@ -20,7 +20,7 @@ export interface CustomersTableRowProps {
 	};
 }
 
-export function CustomersTablerRow({ customers }: CustomersTableRowProps) {
+export function CustomersTablerRow({ customer }: CustomersTableRowProps) {
 	const [isCustomerFormOpen, setIsCustomerFormOpen] = useState(false);
 	const { mutateAsync: deleteCustomer } = useMutation({
 		mutationFn: DeleteCustomer,
@@ -40,9 +40,9 @@ export function CustomersTablerRow({ customers }: CustomersTableRowProps) {
 	return (
 		<>
 			<TableRow>
-				<TableCell className="font-medium">{customers.name}</TableCell>
-				<TableCell className="font-medium">{customers.email}</TableCell>
-				<TableCell className="font-medium">{customers.phone}</TableCell>
+				<TableCell className="font-medium">{customer?.name}</TableCell>
+				<TableCell className="font-medium">{customer?.email}</TableCell>
+				<TableCell className="font-medium">{customer?.phone}</TableCell>
 				<TableCell className="flex items-center">
 					<Button
 						size="xs"
@@ -56,7 +56,7 @@ export function CustomersTablerRow({ customers }: CustomersTableRowProps) {
 					<Button
 						size="xs"
 						className="mr-0.5 border-none"
-						onClick={() => handleDeleteCustomer(customers.id)}
+						onClick={() => handleDeleteCustomer(String(customer?.id))}
 					>
 						<Trash2 className="h-4 w-4" />
 					</Button>
@@ -65,7 +65,7 @@ export function CustomersTablerRow({ customers }: CustomersTableRowProps) {
 			<Dialog open={isCustomerFormOpen} onOpenChange={setIsCustomerFormOpen}>
 				<CustomerForm
 					setIsCustomerFormOpen={setIsCustomerFormOpen}
-					customer={customers}
+					customer={customer}
 				/>
 			</Dialog>
 		</>

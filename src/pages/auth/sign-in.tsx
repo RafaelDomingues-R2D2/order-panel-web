@@ -59,7 +59,7 @@ export function SignIn() {
 					<div className="flex flex-col gap-2 text-center">
 						<h1 className="text-2xl font-semibold tracking-tight">Login</h1>
 						<p className="text-sm text-muted-foreground">
-							Organize a sua vida financeira!
+							Organize as suas entregas!
 						</p>
 					</div>
 					<form onSubmit={handleSubmit(handleSignIn)} className="space-y-4">

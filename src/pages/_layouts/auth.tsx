@@ -11,8 +11,7 @@ export function AuthLayout() {
 				</div>
 
 				<footer className="text-sm">
-					Controle financeiro &copy; Painel de Pedido -{" "}
-					{new Date().getFullYear()}
+					Painel de pedido &copy; Painel de Pedido - {new Date().getFullYear()}
 				</footer>
 			</div>
 
@@ -24,7 +23,7 @@ export function AuthLayout() {
 				<Outlet />
 			</div>
 			<footer className="text-sm ml-12 lg:hidden">
-				Controle financeiro &copy; Painel de Pedido - {new Date().getFullYear()}
+				Painel de pedido &copy; Painel de Pedido - {new Date().getFullYear()}
 			</footer>
 		</div>
 	);
