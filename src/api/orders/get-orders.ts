@@ -6,6 +6,10 @@ export interface Task {
 	customerId: string;
 	customerName: string;
 	customerPhone: string;
+	customerStreet: string;
+	customerNumber: string;
+	customerNeighborhood: string;
+	customerCity: string;
 	totalAmount: number | null;
 	totalItems: number | null;
 }

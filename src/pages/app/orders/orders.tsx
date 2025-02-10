@@ -151,6 +151,12 @@ export function Orders() {
 															<p className="mb-4 text-sm">
 																{task?.customerPhone}
 															</p>
+															<p className="text-sm">
+																{`${task?.customerStreet} - ${task?.customerNumber}`}
+															</p>
+															<p className="mb-4 text-sm">
+																{`${task?.customerNeighborhood} - ${task?.customerCity}`}
+															</p>
 															<p>
 																{format(
 																	add(task?.deliveryDate, { hours: 3 }),
