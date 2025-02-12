@@ -3,6 +3,7 @@ import { api } from "@/lib/axios";
 export interface Task {
 	id: string;
 	deliveryDate: string;
+	pickupeByCustomer: boolean;
 	customerId: string;
 	customerName: string;
 	customerPhone: string;

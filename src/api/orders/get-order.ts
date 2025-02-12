@@ -8,6 +8,7 @@ export interface getOrdersResponse {
 	order: {
 		id: string;
 		deliveryDate: string;
+		pickupeByCustomer: boolean;
 		customerId: string;
 		customerName: string;
 		customerPhone: string;

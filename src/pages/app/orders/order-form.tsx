@@ -26,6 +26,7 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 
+import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Table,
 	TableBody,
@@ -54,6 +55,7 @@ export interface OrderFormProps {
 const orderSchema = z.object({
 	customerId: z.string().min(1, { message: "Este campo é obrigatório" }),
 	deliveryDate: z.string().min(1, { message: "Este campo é obrigatório" }),
+	pickupeByCustomer: z.boolean(),
 });
 
 type OrderSchema = z.infer<typeof orderSchema>;
@@ -92,6 +94,8 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 				orderId !== "new"
 					? String(order?.order?.deliveryDate)
 					: format(new Date(), "yyyy-MM-dd"),
+			pickupeByCustomer:
+				orderId !== "new" ? Boolean(order?.order?.pickupeByCustomer) : false,
 		},
 	});
 
@@ -106,7 +110,11 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 		mutationFn: UpdateOrder,
 	});
 
-	async function handleCreateOrder({ customerId, deliveryDate }: OrderSchema) {
+	async function handleCreateOrder({
+		customerId,
+		deliveryDate,
+		pickupeByCustomer,
+	}: OrderSchema) {
 		if (id !== "new") {
 			console.log("customerId ", customerId);
 			try {
@@ -114,6 +122,7 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 					id,
 					customerId,
 					deliveryDate,
+					pickupeByCustomer,
 				});
 
 				queryClient.invalidateQueries({ queryKey: ["orders"] });
@@ -128,6 +137,7 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 				await createOrder({
 					customerId,
 					deliveryDate,
+					pickupeByCustomer,
 				});
 
 				toast.success("Pedido criado!");
@@ -240,6 +250,26 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 							<DatePicker onSelectDate={handleDateChange} today={true} />
 						</div>
 					)}
+					<Controller
+						name="pickupeByCustomer"
+						control={control}
+						defaultValue={false}
+						render={({ field: { value, onChange } }) => (
+							<div className="mb-6 ml-1 flex flex-col w-full">
+								<Checkbox
+									id="pickupeByCustomer"
+									checked={value}
+									onCheckedChange={onChange}
+								/>
+								<label
+									htmlFor="pickupeByCustomer"
+									className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+								>
+									Retirada pelo Cliente
+								</label>
+							</div>
+						)}
+					/>
 				</div>
 
 				<DialogFooter>
