@@ -1,7 +1,6 @@
 import { getCustomers } from "@/api/customers/get-customers";
 import { getOrderItems } from "@/api/order-items/get-order-items";
 import { CreateOrder } from "@/api/orders/create-order";
-import { getOrder } from "@/api/orders/get-order";
 import { UpdateOrder } from "@/api/orders/update-order";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +25,7 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 
+import type { Task } from "@/api/orders/get-orders";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Table,
@@ -40,8 +40,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 import { OrderItemForm } from "./order-item-form";
@@ -49,7 +50,7 @@ import { OrderItemsTablerRow } from "./order-items-table-row";
 
 export interface OrderFormProps {
 	setIsFormOpen: (isOpen: boolean) => void;
-	orderId: string;
+	order?: Task;
 }
 
 const orderSchema = z.object({
@@ -60,20 +61,15 @@ const orderSchema = z.object({
 
 type OrderSchema = z.infer<typeof orderSchema>;
 
-export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
+export function OrderForm({ setIsFormOpen, order }: OrderFormProps) {
 	const [isItemFormOpen, setIsItemFormOpen] = useState(false);
-	const [id, setId] = useState(orderId);
+	const [, setSearchParams] = useSearchParams();
 
 	const { data: orderItems } = useQuery({
-		queryKey: ["orderItems", id],
-		queryFn: () => getOrderItems({ orderId: id }),
-		enabled: id !== "new",
-	});
-
-	const { data: order, isFetched } = useQuery({
-		queryKey: ["order", orderId],
-		queryFn: () => getOrder({ id: orderId }),
-		enabled: orderId !== "new",
+		queryKey: ["orderItems", order?.id],
+		queryFn: () => getOrderItems({ orderId: String(order?.id) }),
+		// biome-ignore lint/complexity/noUselessTernary: <explanation>
+		enabled: order?.id ? true : false,
 	});
 
 	const { data: customers } = useQuery({
@@ -86,24 +82,20 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 		control,
 		formState: { isSubmitting, errors },
 		setValue,
+		reset,
 	} = useForm<OrderSchema>({
 		resolver: zodResolver(orderSchema),
 		values: {
-			customerId: orderId !== "new" ? String(order?.order?.customerId) : "",
-			deliveryDate:
-				orderId !== "new"
-					? String(order?.order?.deliveryDate)
-					: format(new Date(), "yyyy-MM-dd"),
-			pickupeByCustomer:
-				orderId !== "new" ? Boolean(order?.order?.pickupeByCustomer) : false,
+			customerId: order ? String(order?.customerId) : "",
+			deliveryDate: order
+				? String(order?.deliveryDate)
+				: format(new Date(), "yyyy-MM-dd"),
+			pickupeByCustomer: order ? Boolean(order?.pickupeByCustomer) : false,
 		},
 	});
 
 	const { mutateAsync: createOrder } = useMutation({
 		mutationFn: CreateOrder,
-		onSuccess(order) {
-			setId(order?.data?.order?.id);
-		},
 	});
 
 	const { mutateAsync: updateOrder } = useMutation({
@@ -115,19 +107,19 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 		deliveryDate,
 		pickupeByCustomer,
 	}: OrderSchema) {
-		if (id !== "new") {
-			console.log("customerId ", customerId);
+		if (order) {
 			try {
 				await updateOrder({
-					id,
+					id: order?.id,
 					customerId,
 					deliveryDate,
 					pickupeByCustomer,
 				});
 
 				queryClient.invalidateQueries({ queryKey: ["orders"] });
-				queryClient.invalidateQueries({ queryKey: ["order", orderId] });
+				queryClient.invalidateQueries({ queryKey: ["order", order?.id] });
 				setIsFormOpen(false);
+				reset();
 				toast.success("Pedido Atualizado!");
 			} catch (err) {
 				toast.error("Erro ao atualizar o pedido");
@@ -140,8 +132,8 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 					pickupeByCustomer,
 				});
 
-				toast.success("Pedido criado!");
-				setIsItemFormOpen(true);
+				setIsFormOpen(false);
+				reset();
 				queryClient.invalidateQueries({ queryKey: ["orders"] });
 			} catch (err) {
 				toast.error("Erro ao criar o pedido");
@@ -155,14 +147,11 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 		}
 	};
 
-	useEffect(() => {
-		setId(orderId);
-	}, [orderId]);
-
 	return (
 		<DialogContent className="min-w-96">
 			<DialogTitle> </DialogTitle>
 			<form
+				id="order-form"
 				onSubmit={handleSubmit(handleCreateOrder)}
 				className="flex flex-col gap-1"
 			>
@@ -234,13 +223,13 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 							</span>
 						)}
 					</div>
-					{orderId !== "new" ? (
-						isFetched && (
+					{order?.id ? (
+						order?.id && (
 							<div className="mb-6 ml-1 flex flex-col w-full">
 								<Label className="mb-2">Data</Label>
 								<DatePicker
 									onSelectDate={handleDateChange}
-									inputDate={parseISO(order?.order?.deliveryDate ?? "")}
+									inputDate={parseISO(order?.deliveryDate ?? "")}
 								/>
 							</div>
 						)
@@ -265,7 +254,7 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 									htmlFor="pickupeByCustomer"
 									className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
 								>
-									Retirada pelo Cliente
+									Cliente vai retirar
 								</label>
 							</div>
 						)}
@@ -276,7 +265,7 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 					<Button type="submit" disabled={isSubmitting} className="w-full">
 						{isSubmitting ? (
 							<Loader2 className="h-6 w-6 animate-spin text-gray-50" />
-						) : id !== "new" ? (
+						) : order ? (
 							<Label>Salvar</Label>
 						) : (
 							<Label>Criar</Label>
@@ -284,7 +273,7 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 					</Button>
 				</DialogFooter>
 			</form>
-			{id !== "new" && (
+			{order && (
 				<>
 					<span className="text-1xl font-bold tracking-tight">Itens</span>
 					<div className="flex items-center justify-between">
@@ -293,6 +282,12 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 							size="xs"
 							className="mr-0.5 border-none"
 							onClick={() => {
+								setSearchParams((state) => {
+									state.set("orderId", String(order?.id));
+
+									return state;
+								});
+
 								setIsItemFormOpen(true);
 							}}
 						>
@@ -325,11 +320,7 @@ export function OrderForm({ orderId, setIsFormOpen }: OrderFormProps) {
 						</Table>
 					</div>
 					<Dialog open={isItemFormOpen} onOpenChange={setIsItemFormOpen}>
-						<OrderItemForm
-							setIsItemFormOpen={setIsItemFormOpen}
-							orderId={id}
-							orderItemId={"new"}
-						/>
+						<OrderItemForm setIsItemFormOpen={setIsItemFormOpen} />
 					</Dialog>
 				</>
 			)}

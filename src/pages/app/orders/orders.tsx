@@ -1,10 +1,8 @@
 import { changeOrderStage } from "@/api/orders/change-order-stage";
-import { DeleteOrder } from "@/api/orders/delete-order";
 import { type Task, getOrders } from "@/api/orders/get-orders";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
-import { queryClient } from "@/lib/react-query";
 import {
 	DragDropContext,
 	Draggable,
@@ -12,11 +10,9 @@ import {
 	Droppable,
 } from "@hello-pangea/dnd";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { add, format } from "date-fns";
-import { PencilLine, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { toast } from "sonner";
+import { TaskCard } from "./Task-card";
 import { OrdersTableSkeleton } from "./card-skeleton";
 import { OrderForm } from "./order-form";
 
@@ -34,7 +30,6 @@ const columsLabel = {
 
 export function Orders() {
 	const [isFormOpen, setIsFormOpen] = useState(false);
-	const [orderId, setOrderId] = useState("new");
 
 	const { data: orders, isLoading: isLoadingOrders } = useQuery({
 		queryKey: ["orders"],
@@ -75,21 +70,6 @@ export function Orders() {
 		changeOrderStageFn({ id: draggableId, stage: destination.droppableId });
 	};
 
-	const { mutateAsync: deleteOrder } = useMutation({
-		mutationFn: DeleteOrder,
-	});
-
-	async function handleDeleteOrder(id: string) {
-		try {
-			await deleteOrder({ id });
-
-			toast.success("Pedido Deletado!");
-			queryClient.invalidateQueries({ queryKey: ["orders"] });
-		} catch (err) {
-			toast.error("Erro ao deletar o pedido");
-		}
-	}
-
 	useEffect(() => {
 		if (orders) {
 			setTasks(orders as Columns);
@@ -108,7 +88,6 @@ export function Orders() {
 						className="mr-0.5 border-none"
 						onClick={() => {
 							setIsFormOpen(true);
-							setOrderId("new");
 						}}
 					>
 						Novo
@@ -129,86 +108,29 @@ export function Orders() {
 										<h2 className="text-xl font-semibold mb-4">
 											{columsLabel[columnId as keyof Columns]}
 										</h2>
-										{tasks[columnId as keyof Columns].map((task, index) => (
-											<Draggable
-												draggableId={task.id}
-												index={index}
-												key={task.id}
-											>
-												{(provided, snapshot) => (
-													<Card
-														ref={provided.innerRef}
-														{...provided.draggableProps}
-														{...provided.dragHandleProps}
-														className={`p-4 mb-3 rounded-lg shadow-sm transition-transform ${
-															snapshot.isDragging ? "scale-105" : "scale-100"
-														}`}
-													>
-														<CardTitle className="text-center ">
-															<p>{task?.customerName}</p>
-														</CardTitle>
-														<CardContent className="flex-col justify-between items-center text-center">
-															<p className="mb-4 text-sm">
-																{task?.customerPhone}
-															</p>
-
-															{task.pickupeByCustomer ? (
-																<p className="mb-4 text-sm">
-																	Cliente vai retirar
-																</p>
-															) : (
-																<>
-																	<p className="text-sm">
-																		{`${task?.customerStreet} - ${task?.customerNumber}`}
-																	</p>
-																	<p className="mb-4 text-sm">
-																		{`${task?.customerNeighborhood} - ${task?.customerCity}`}
-																	</p>
-																</>
-															)}
-
-															<p>
-																{format(
-																	add(task?.deliveryDate, { hours: 3 }),
-																	"dd/MM/yyyy",
-																)}
-															</p>
-															<p>{task?.totalItems} - Itens</p>
-															<p>
-																{/* biome-ignore lint/style/noNonNullAssertion: <explanation> */}
-																{(task.totalAmount! / 100).toLocaleString(
-																	"pt-BR",
-																	{
-																		style: "currency",
-																		currency: "BRL",
-																	},
-																)}
-															</p>
-															<div className="space-y-2.5">
-																<Button
-																	size="xs"
-																	className="mr-0.5 border-none"
-																	onClick={() => {
-																		setIsFormOpen(true);
-																		setOrderId(task.id);
-																	}}
-																>
-																	<PencilLine className="h-4 w-4" />
-																</Button>
-																<Button
-																	size="xs"
-																	className="mr-0.5 border-none"
-																	onClick={() => handleDeleteOrder(task.id)}
-																>
-																	<Trash2 className="h-4 w-4" />
-																</Button>
-															</div>
-														</CardContent>
-													</Card>
-												)}
-											</Draggable>
-										))}
-										{provided.placeholder}
+										{tasks[columnId as keyof Columns].map((task, index) => {
+											return (
+												<Draggable
+													draggableId={task.id}
+													index={index}
+													key={task.id}
+												>
+													{(provided, snapshot) => (
+														<Card
+															ref={provided.innerRef}
+															{...provided.draggableProps}
+															{...provided.dragHandleProps}
+															className={`p-4 mb-3 rounded-lg shadow-sm transition-transform ${
+																snapshot.isDragging ? "scale-105" : "scale-100"
+															}`}
+														>
+															<TaskCard task={task} index={index} />
+														</Card>
+													)}
+												</Draggable>
+											);
+										})}
+										{provided?.placeholder}
 									</Card>
 								)}
 							</Droppable>
@@ -216,11 +138,10 @@ export function Orders() {
 					</div>
 				</DragDropContext>
 			</div>
-			{isLoadingOrders && <OrdersTableSkeleton />}
-
 			<Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-				<OrderForm setIsFormOpen={setIsFormOpen} orderId={orderId} />
+				<OrderForm setIsFormOpen={setIsFormOpen} />
 			</Dialog>
+			{isLoadingOrders && <OrdersTableSkeleton />}
 		</>
 	);
 }

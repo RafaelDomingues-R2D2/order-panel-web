@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { OrderItemForm } from "./order-item-form";
 
 export interface OrderItemsTableRowProps {
-	orderItem: {
+	orderItem?: {
 		id: string;
 		orderId: string;
 		total: number | null;
@@ -34,7 +34,7 @@ export function OrderItemsTablerRow({ orderItem }: OrderItemsTableRowProps) {
 
 			toast.success("Item Deletado!");
 			queryClient.invalidateQueries({
-				queryKey: ["orderItems", orderItem.orderId],
+				queryKey: ["orderItems", orderItem?.orderId],
 			});
 			queryClient.invalidateQueries({ queryKey: ["orders"] });
 		} catch (err) {
@@ -45,10 +45,10 @@ export function OrderItemsTablerRow({ orderItem }: OrderItemsTableRowProps) {
 	return (
 		<>
 			<TableRow>
-				<TableCell className="font-medium">{orderItem.productName}</TableCell>
-				<TableCell className="font-medium">{orderItem.quantity}</TableCell>
+				<TableCell className="font-medium">{orderItem?.productName}</TableCell>
+				<TableCell className="font-medium">{orderItem?.quantity}</TableCell>
 				<TableCell>
-					{(Number(orderItem.total) / 100).toLocaleString("pt-BR", {
+					{(Number(orderItem?.total) / 100).toLocaleString("pt-BR", {
 						style: "currency",
 						currency: "BRL",
 					})}
@@ -66,7 +66,7 @@ export function OrderItemsTablerRow({ orderItem }: OrderItemsTableRowProps) {
 					<Button
 						size="xs"
 						className="mr-0.5 border-none"
-						onClick={() => handleDeleteOrderItem(orderItem.id)}
+						onClick={() => handleDeleteOrderItem(String(orderItem?.id))}
 					>
 						<Trash2 className="h-4 w-4" />
 					</Button>
@@ -75,8 +75,7 @@ export function OrderItemsTablerRow({ orderItem }: OrderItemsTableRowProps) {
 			<Dialog open={isItemFormOpen} onOpenChange={setIsItemFormOpen}>
 				<OrderItemForm
 					setIsItemFormOpen={setIsItemFormOpen}
-					orderId={orderItem.orderId}
-					orderItemId={orderItem.id}
+					orderItem={orderItem}
 				/>
 			</Dialog>
 		</>

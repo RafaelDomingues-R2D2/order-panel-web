@@ -22,6 +22,7 @@ export interface CustomersTableRowProps {
 
 export function CustomersTablerRow({ customer }: CustomersTableRowProps) {
 	const [isCustomerFormOpen, setIsCustomerFormOpen] = useState(false);
+
 	const { mutateAsync: deleteCustomer } = useMutation({
 		mutationFn: DeleteCustomer,
 	});

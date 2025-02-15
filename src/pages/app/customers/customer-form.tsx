@@ -22,7 +22,7 @@ import { queryClient } from "@/lib/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -55,14 +55,14 @@ export function CustomerForm({
 }: CustomerFormProps) {
 	const [isCustomerAddressFormOpen, setIsCustomerAddressFormOpen] =
 		useState(false);
-	const [id, setId] = useState(customer?.id);
 	const [, setSearchParams] = useSearchParams();
 
 	const { data: customerAddresses } = useQuery({
 		queryKey: ["customerAddresses", customer?.id],
-		queryFn: () => getCustomerAddressesByCustomer({ customerId: String(id) }),
+		queryFn: () =>
+			getCustomerAddressesByCustomer({ customerId: String(customer?.id) }),
 		// biome-ignore lint/complexity/noUselessTernary: <explanation>
-		enabled: id ? true : false,
+		enabled: customer?.id ? true : false,
 	});
 
 	const {
@@ -122,15 +122,11 @@ export function CustomerForm({
 		}
 	}
 
-	useEffect(() => {
-		setId(customer?.id);
-	}, [customer?.id]);
-
 	return (
 		<DialogContent className="min-w-96 w-[80000px]">
 			<DialogTitle> </DialogTitle>
 			<form
-				id="order-item-form"
+				id="customer-form"
 				onSubmit={handleSubmit(handleCreateCustomer)}
 				className="flex flex-col gap-1"
 			>

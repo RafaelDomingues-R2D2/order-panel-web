@@ -44,7 +44,6 @@ export interface CustomerAddressProps {
 		state: string | null;
 		postalCode: string | null;
 	};
-	customerId?: string;
 }
 
 const customerAddressFormSchema = z.object({
@@ -183,7 +182,7 @@ export function CustomerAddressForm({
 		<DialogContent className="min-w-96">
 			<DialogTitle> </DialogTitle>
 			<form
-				id="order-item-form"
+				id="order-address-form"
 				onSubmit={handleSubmit(handleCreateCustomer)}
 				className="flex flex-col gap-1"
 			>

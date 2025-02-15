@@ -1,5 +1,4 @@
 import { CreateOrderItem } from "@/api/order-items/create-order-item";
-import { getOrderItem } from "@/api/order-items/get-order-item";
 import { UpdateOrderItem } from "@/api/order-items/update-order-item";
 import { getProducts } from "@/api/products/get-products";
 import { Button } from "@/components/ui/button";
@@ -30,13 +29,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 
 export interface OrderItemFormProps {
 	setIsItemFormOpen: (isOpen: boolean) => void;
-	orderId?: string;
-	orderItemId?: string;
+	orderItem?: {
+		id: string;
+		orderId: string;
+		total: number | null;
+		productId: string;
+		quantity: number | null;
+		productName: string;
+	};
 }
 
 const orderItemSchema = z.object({
@@ -49,18 +55,15 @@ type OrderItemSchema = z.infer<typeof orderItemSchema>;
 
 export function OrderItemForm({
 	setIsItemFormOpen,
-	orderId,
-	orderItemId,
+	orderItem,
 }: OrderItemFormProps) {
+	const [searchParams] = useSearchParams();
+
+	const orderId = searchParams.get("orderId");
+
 	const { data: products } = useQuery({
 		queryKey: ["products"],
 		queryFn: () => getProducts(),
-	});
-
-	const { data: orderItem } = useQuery({
-		queryKey: ["orderItem", orderItemId],
-		queryFn: () => getOrderItem({ id: String(orderItemId) }),
-		enabled: orderItemId !== "new",
 	});
 
 	const {
@@ -73,12 +76,9 @@ export function OrderItemForm({
 	} = useForm<OrderItemSchema>({
 		resolver: zodResolver(orderItemSchema),
 		values: {
-			orderId:
-				orderItemId !== "new" ? String(orderItem?.orderItem?.orderId) : "",
-			productId:
-				orderItemId !== "new" ? String(orderItem?.orderItem?.productId) : "",
-			quantity:
-				orderItemId !== "new" ? String(orderItem?.orderItem?.quantity) : "",
+			orderId: orderItem?.id ? String(orderItem?.orderId) : "",
+			productId: orderItem?.id ? String(orderItem?.productId) : "",
+			quantity: orderItem?.id ? String(orderItem?.quantity) : "",
 		},
 	});
 
@@ -94,10 +94,10 @@ export function OrderItemForm({
 		productId,
 		quantity,
 	}: OrderItemSchema) {
-		if (orderItemId !== "new") {
+		if (orderItem?.id) {
 			try {
 				await updateOrderItem({
-					id: String(orderItemId),
+					id: String(orderItem?.id),
 					productId,
 					quantity: Number(quantity),
 				});
@@ -107,7 +107,7 @@ export function OrderItemForm({
 				reset();
 				queryClient.invalidateQueries({ queryKey: ["orderItems", orderId] });
 				queryClient.invalidateQueries({
-					queryKey: ["orderItem", orderItemId],
+					queryKey: ["orderItem", orderItem?.id],
 				});
 				queryClient.invalidateQueries({ queryKey: ["orders"] });
 			} catch (err) {
@@ -134,8 +134,7 @@ export function OrderItemForm({
 
 	return (
 		<DialogContent className="min-w-96">
-			{/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
-			<DialogTitle></DialogTitle>
+			<DialogTitle> </DialogTitle>
 			<form
 				id="order-item-form"
 				onSubmit={handleSubmit(handleCreateOrderItem)}
@@ -154,7 +153,8 @@ export function OrderItemForm({
 										// biome-ignore lint/a11y/useSemanticElements: <explanation>
 										role="combobox"
 										className="w-auto justify-between"
-										disabled={orderItemId !== "new"}
+										// biome-ignore lint/complexity/noUselessTernary: <explanation>
+										disabled={orderItem?.id ? true : false}
 									>
 										{value
 											? `${
@@ -225,7 +225,8 @@ export function OrderItemForm({
 						id="quantity"
 						type="number"
 						autoCorrect="off"
-						disabled={orderItemId !== "new"}
+						// biome-ignore lint/complexity/noUselessTernary: <explanation>
+						disabled={orderItem?.id ? true : false}
 						{...register("quantity")}
 					/>
 					{errors.quantity && (
@@ -239,7 +240,7 @@ export function OrderItemForm({
 					<Button type="submit" disabled={isSubmitting} className="w-full">
 						{isSubmitting ? (
 							<Loader2 className="h-6 w-6 animate-spin text-gray-50" />
-						) : orderItemId !== "new" ? (
+						) : orderItem?.id ? (
 							<Label>Salvar</Label>
 						) : (
 							<Label>Adicionar</Label>
