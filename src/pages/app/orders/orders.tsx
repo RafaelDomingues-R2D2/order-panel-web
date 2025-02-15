@@ -12,9 +12,9 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { TaskCard } from "./Task-card";
 import { OrdersTableSkeleton } from "./card-skeleton";
 import { OrderForm } from "./order-form";
+import { TaskCard } from "./task-card";
 
 interface Columns {
 	TODO: Task[];
