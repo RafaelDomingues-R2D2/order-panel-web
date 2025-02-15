@@ -186,7 +186,7 @@ export function CustomerAddressForm({
 				onSubmit={handleSubmit(handleCreateCustomer)}
 				className="flex flex-col gap-1"
 			>
-				<div className="mb-6 flex flex-col ml-2">
+				<div className="mb-6 flex flex-col w-full">
 					<Label className="mb-2">Rua</Label>
 					<Input
 						id="street"
@@ -200,7 +200,7 @@ export function CustomerAddressForm({
 						</span>
 					)}
 				</div>
-				<div className="mb-6 flex flex-col ml-2">
+				<div className="mb-6 flex flex-col w-full">
 					<Label className="mb-2">Número</Label>
 					<Input
 						id="number"
@@ -214,7 +214,7 @@ export function CustomerAddressForm({
 						</span>
 					)}
 				</div>
-				<div className="mb-6 flex flex-col ml-2">
+				<div className="mb-6 flex flex-col w-full">
 					<Label className="mb-2">Bairro</Label>
 					<Input
 						id="neighborhood"
@@ -228,7 +228,7 @@ export function CustomerAddressForm({
 						</span>
 					)}
 				</div>
-				<div className="mb-6 flex flex-col ml-2">
+				<div className="mb-6 flex flex-col w-full">
 					<Label className="mb-2">Cidade</Label>
 					<Input
 						id="city"
@@ -303,7 +303,7 @@ export function CustomerAddressForm({
 						</span>
 					)}
 				</div>
-				<div className="mb-6 flex flex-col ml-2">
+				<div className="mb-6 flex flex-col w-full">
 					<Label className="mb-2">CEP</Label>
 					<Input
 						id="postalCode"

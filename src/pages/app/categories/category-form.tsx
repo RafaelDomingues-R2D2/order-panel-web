@@ -96,42 +96,39 @@ export function CategoryForm({
 
 	return (
 		<DialogContent className="min-w-96">
-			{/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
-			<DialogTitle></DialogTitle>
+			<DialogTitle> </DialogTitle>
 			<form
 				id="order-item-form"
 				onSubmit={handleSubmit(handleCreateCategory)}
 				className="flex flex-col gap-1"
 			>
-				<div className="flex items-center">
-					<div className="mb-6 flex flex-col ml-2">
-						<Label className="mb-2">Nome</Label>
-						<Input
-							id="name"
-							type="text"
-							autoCorrect="off"
-							{...register("name")}
-						/>
-						{errors.name && (
-							<span className="text-xs font-medium text-red-500 dark:text-red-400 absolute mt-16">
-								{errors.name.message}
-							</span>
-						)}
-					</div>
-					<div className="mb-6 flex flex-col ml-2">
-						<Label className="mb-2">Descrição</Label>
-						<Input
-							id="description"
-							type="text"
-							autoCorrect="off"
-							{...register("description")}
-						/>
-						{errors.description && (
-							<span className="text-xs font-medium text-red-500 dark:text-red-400 absolute mt-16">
-								{errors.description.message}
-							</span>
-						)}
-					</div>
+				<div className="mb-6 flex flex-col w-full">
+					<Label className="mb-2">Nome</Label>
+					<Input
+						id="name"
+						type="text"
+						autoCorrect="off"
+						{...register("name")}
+					/>
+					{errors.name && (
+						<span className="text-xs font-medium text-red-500 dark:text-red-400 absolute mt-16">
+							{errors.name.message}
+						</span>
+					)}
+				</div>
+				<div className="mb-6 flex flex-col w-full">
+					<Label className="mb-2">Descrição</Label>
+					<Input
+						id="description"
+						type="text"
+						autoCorrect="off"
+						{...register("description")}
+					/>
+					{errors.description && (
+						<span className="text-xs font-medium text-red-500 dark:text-red-400 absolute mt-16">
+							{errors.description.message}
+						</span>
+					)}
 				</div>
 
 				<DialogFooter>
