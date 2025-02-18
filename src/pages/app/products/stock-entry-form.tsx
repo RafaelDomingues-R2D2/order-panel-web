@@ -82,8 +82,9 @@ export function StockEntryForm({
 					<Label className="mb-2">Estoque</Label>
 					<Input
 						id="stock"
-						type="text"
+						type="number"
 						autoCorrect="off"
+						min={0}
 						{...register("stock")}
 					/>
 					{errors.stock && (
@@ -97,8 +98,6 @@ export function StockEntryForm({
 					<Button type="submit" disabled={isSubmitting} className="w-full">
 						{isSubmitting ? (
 							<Loader2 className="h-6 w-6 animate-spin text-gray-50" />
-						) : product ? (
-							<Label>Salvar</Label>
 						) : (
 							<Label>Adicionar</Label>
 						)}

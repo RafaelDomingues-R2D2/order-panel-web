@@ -50,8 +50,19 @@ export interface ProductFormProps {
 const productSchema = z.object({
 	name: z.string().min(1, { message: "Este campo é obrigatório" }),
 	description: z.string(),
-	price: z.string().min(1, { message: "Este campo é obrigatório" }),
-	stock: z.string().min(1, { message: "Este campo é obrigatório" }),
+	price: z
+		.string()
+		.min(1, { message: "Este campo é obrigatório" })
+		.refine(
+			(value) => {
+				const numberValue = Number.parseFloat(value);
+				return numberValue >= 0;
+			},
+			{
+				message: "O valor não pode ser negativo",
+			},
+		),
+	stock: z.string(),
 	categoryId: z.string().min(1, { message: "Este campo é obrigatório" }),
 });
 
@@ -95,7 +106,6 @@ export function ProductForm({
 		name,
 		description,
 		price,
-		stock,
 		categoryId,
 	}: ProductSchema) {
 		if (product) {
@@ -105,7 +115,6 @@ export function ProductForm({
 					name,
 					description,
 					price: Number(price),
-					stock: Number(stock),
 					categoryId,
 				});
 
@@ -122,7 +131,6 @@ export function ProductForm({
 					name,
 					description,
 					price: Number(price),
-					stock: Number(stock),
 					categoryId,
 				});
 
@@ -242,16 +250,11 @@ export function ProductForm({
 					<Label className="mb-2">Estoque</Label>
 					<Input
 						id="stock"
-						type="text"
+						type="number"
 						autoCorrect="off"
 						disabled
 						{...register("stock")}
 					/>
-					{errors.stock && (
-						<span className="text-xs font-medium text-red-500 dark:text-red-400 absolute mt-16">
-							{errors.stock.message}
-						</span>
-					)}
 				</div>
 				<div className="mb-6 flex flex-col w-full">
 					<Label className="mb-2">Valor</Label>

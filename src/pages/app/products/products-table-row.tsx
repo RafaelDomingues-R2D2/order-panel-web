@@ -52,7 +52,7 @@ export function ProductsTablerRow({ products }: ProductsTableRowProps) {
 				<TableCell className="flex items-center">
 					<Button
 						size="xs"
-						className="mr-0.5 border-none"
+						className="mr-3 border-none"
 						onClick={() => setIsStockEntryFormOpen(true)}
 					>
 						<PackagePlus className="h-4 w-4" />
