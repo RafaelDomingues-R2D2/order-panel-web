@@ -244,6 +244,7 @@ export function ProductForm({
 						id="stock"
 						type="text"
 						autoCorrect="off"
+						disabled
 						{...register("stock")}
 					/>
 					{errors.stock && (

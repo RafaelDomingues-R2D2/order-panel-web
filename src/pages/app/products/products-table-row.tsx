@@ -4,10 +4,11 @@ import { Dialog } from "@/components/ui/dialog";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { queryClient } from "@/lib/react-query";
 import { useMutation } from "@tanstack/react-query";
-import { PencilLine, Trash2 } from "lucide-react";
+import { PackagePlus, PencilLine, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ProductForm } from "./product-form";
+import { StockEntryForm } from "./stock-entry-form";
 
 export interface ProductsTableRowProps {
 	products: {
@@ -23,6 +24,8 @@ export interface ProductsTableRowProps {
 
 export function ProductsTablerRow({ products }: ProductsTableRowProps) {
 	const [isProductFormOpen, setIsProductFormOpen] = useState(false);
+	const [stockEntryFormOpen, setIsStockEntryFormOpen] = useState(false);
+
 	const { mutateAsync: deleteProduct } = useMutation({
 		mutationFn: DeleteProduct,
 	});
@@ -50,6 +53,13 @@ export function ProductsTablerRow({ products }: ProductsTableRowProps) {
 					<Button
 						size="xs"
 						className="mr-0.5 border-none"
+						onClick={() => setIsStockEntryFormOpen(true)}
+					>
+						<PackagePlus className="h-4 w-4" />
+					</Button>
+					<Button
+						size="xs"
+						className="mr-0.5 border-none"
 						onClick={() => {
 							setIsProductFormOpen(true);
 						}}
@@ -68,6 +78,12 @@ export function ProductsTablerRow({ products }: ProductsTableRowProps) {
 			<Dialog open={isProductFormOpen} onOpenChange={setIsProductFormOpen}>
 				<ProductForm
 					setIsProductFormOpen={setIsProductFormOpen}
+					product={products}
+				/>
+			</Dialog>
+			<Dialog open={stockEntryFormOpen} onOpenChange={setIsStockEntryFormOpen}>
+				<StockEntryForm
+					setIsStockEntryFormOpen={setIsStockEntryFormOpen}
 					product={products}
 				/>
 			</Dialog>
