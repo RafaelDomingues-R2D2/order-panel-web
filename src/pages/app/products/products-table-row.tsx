@@ -46,7 +46,15 @@ export function ProductsTablerRow({ products }: ProductsTableRowProps) {
 			<TableRow>
 				<TableCell className="font-medium">{products.name}</TableCell>
 				<TableCell className="font-medium">{products.description}</TableCell>
-				<TableCell className="font-medium">{products.price}</TableCell>
+				<TableCell className="font-medium">
+					{
+						/* biome-ignore lint/style/noNonNullAssertion: <explanation> */
+						(products.price! / 100).toLocaleString("pt-BR", {
+							style: "currency",
+							currency: "BRL",
+						})
+					}
+				</TableCell>
 				<TableCell className="font-medium">{products.stock}</TableCell>
 				<TableCell className="font-medium">{products.categoryName}</TableCell>
 				<TableCell className="flex items-center">

@@ -30,7 +30,18 @@ export interface StockEntryProps {
 }
 
 const productInputSchema = z.object({
-	stock: z.string().min(1, { message: "Este campo é obrigatório" }),
+	stock: z
+		.string()
+		.min(1, { message: "Este campo é obrigatório" })
+		.refine(
+			(value) => {
+				const numberValue = Number.parseFloat(value);
+				return numberValue >= 0;
+			},
+			{
+				message: "O valor não pode ser negativo",
+			},
+		),
 });
 
 type StockEntrySchema = z.infer<typeof productInputSchema>;
@@ -82,9 +93,8 @@ export function StockEntryForm({
 					<Label className="mb-2">Estoque</Label>
 					<Input
 						id="stock"
-						type="number"
+						type="text"
 						autoCorrect="off"
-						min={0}
 						{...register("stock")}
 					/>
 					{errors.stock && (
