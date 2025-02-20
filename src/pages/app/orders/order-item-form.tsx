@@ -48,7 +48,18 @@ export interface OrderItemFormProps {
 const orderItemSchema = z.object({
 	orderId: z.string(),
 	productId: z.string().min(1, { message: "Este campo é obrigatório" }),
-	quantity: z.string().min(1, { message: "Este campo é obrigatório" }),
+	quantity: z
+		.string()
+		.min(1, { message: "Este campo é obrigatório" })
+		.refine(
+			(value) => {
+				const numberValue = Number.parseFloat(value);
+				return numberValue > 0;
+			},
+			{
+				message: "O valor tem quer ser positivo",
+			},
+		),
 });
 
 type OrderItemSchema = z.infer<typeof orderItemSchema>;

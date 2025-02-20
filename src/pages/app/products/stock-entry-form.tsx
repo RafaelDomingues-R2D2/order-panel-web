@@ -36,10 +36,10 @@ const productInputSchema = z.object({
 		.refine(
 			(value) => {
 				const numberValue = Number.parseFloat(value);
-				return numberValue >= 0;
+				return numberValue > 0;
 			},
 			{
-				message: "O valor não pode ser negativo",
+				message: "O valor tem quer ser positivo",
 			},
 		),
 });
